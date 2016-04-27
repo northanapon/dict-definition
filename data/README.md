@@ -7,5 +7,6 @@
 # Word List
 
 From Peter Norvig's [Ngrams](http://norvig.com/ngrams/)
+
 1. Downlaod [unigram count](http://norvig.com/ngrams/count_1w.txt)
 2. Place it in `norvig_ngram` under this directory
