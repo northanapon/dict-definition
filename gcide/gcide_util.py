@@ -1,3 +1,9 @@
+import codecs
+import StringIO
+import os
+import json
+from copy import deepcopy
+
 def index_gcide(gcide_dir):
     index = {}
     for fn in os.listdir(gcide_dir):
@@ -13,22 +19,40 @@ def index_gcide(gcide_dir):
                 index[key].append(entry)
     return index
 
-def write_gcide_defs(entries, ofp):
-    total_write_out = 0
+def normalize_entries(entries):
+    new_entries = []
+    for entry in entries:
+        for sense in entry[u'senses']:
+            new_entry = {}
+            new_entry['word'] = entry[u'key'].lower()
+            new_entry['source'] = 'gcide'
+            if u'pos' not in entry:
+                new_entry['pos'] = ''
+            else:
+                new_entry['pos'] = entry[u'pos'][0]
+            new_entry['def'] = sense[u'def']
+            new_entries.append(new_entry)
+    return new_entries
+
+def filter_entries(entries):
+    ''' Remove entries with empty definition or POS '''
+    new_entries = []
     for entry in entries:
         if u'pos' not in entry:
             continue
-        count = 0
+        if len(entry[u'pos'][0].strip()) == 0:
+            continue
+        if u'senses' not in entry:
+            continue
+        senses = []
         for sense in entry[u'senses']:
-            ofp.write(entry[u'key'].lower())
-            ofp.write('\t')
-            ofp.write('gcide\t')
-            ofp.write(entry[u'pos'][0])
-            ofp.write('\t')
-            ofp.write(sense[u'def'])
-            ofp.write('\n')
-            count = count + 1
-            total_write_out = total_write_out + 1
-            if count > 1:
-                break
-    return total_write_out
+            if u'def' not in sense:
+                continue
+            if len(sense[u'def'].strip()) == 0:
+                continue
+            senses.append(sense)
+        if len(senses) != len(entry[u'senses']):
+            new_entry = deepcopy(entry)
+            new_entry[u'senses'] = senses
+        new_entries.append(entry)
+    return new_entries
