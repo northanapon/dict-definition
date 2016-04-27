@@ -1,3 +1,5 @@
 *.pyc
 *.ignored
-data/gcide-entries.xml
+data/gcide
+data/norvig_ngram
+output/gcide-entries
