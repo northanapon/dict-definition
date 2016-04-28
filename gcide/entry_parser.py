@@ -76,7 +76,9 @@ def _parse_morph(n_morph, tag):
             morph = {}
             morph['pos'] = parse_pos(elem)
         if elem.tag == tag and morph is not None:
-            morph['word'] = elem.text
+            if 'word' not in morph:
+                morph['word'] = []
+            morph['word'].append(elem.text)
     if morph is not None:
         morphs.append(morph)
     if len(morphs) == 0:

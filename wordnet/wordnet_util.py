@@ -28,7 +28,7 @@ def normalize_groups(groups, word):
     ''' Extract word, POS, and definition from groups of senses '''
     entries = []
     for pos in groups:
-        for sense in g[pos]:
+        for sense in groups[pos]:
             entry = {}
             entry['word'] = word.lower()
             entry['source'] = 'wordnet'
