@@ -193,3 +193,11 @@ worth
 yet
 yon
 yonder
+is
+am
+are
+be
+were
+was
+very
+next

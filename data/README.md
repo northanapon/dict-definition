@@ -14,5 +14,8 @@ From Peter Norvig's [Ngrams](http://norvig.com/ngrams/)
 2. Place it in `norvig_ngram` under this directory
 
 # Function words and Stop words
-- [function_words.txt]() is compiled from [function word lists](http://www.sequencepublishing.com/academic.html) by Leah Gilner and Franc Morales
-- [wn_stop_words.txt]() is adapted from Ted Pedersen's [WordNet Stop List](http://www.d.umn.edu/~tpederse/Group01/WordNet/wordnet-stoplist.html)
+- [function_words.txt](https://github.com/NorThanapon/dict-definition/blob/master/data/function_words.txt) is compiled from [function word lists](http://www.sequencepublishing.com/academic.html) by Leah Gilner and Franc Morales
+- [wn_stop_words.txt](https://github.com/NorThanapon/dict-definition/blob/master/data/wn_stop_words.txt) is adapted from Ted Pedersen's [WordNet Stop List](http://www.d.umn.edu/~tpederse/Group01/WordNet/wordnet-stoplist.html)
+
+# Word2Vec Vocabulary
+[w2v_vocab.txt](https://github.com/NorThanapon/dict-definition/blob/master/data/w2v_vocab.txt) is a mapping (index -> word) of the pre-trained word and phrase vectors available [here](https://code.google.com/archive/p/word2vec/)

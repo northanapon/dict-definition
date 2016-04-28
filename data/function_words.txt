@@ -10,6 +10,8 @@ should
 will
 would
 accordingly
+only
+also
 after
 albeit
 although
@@ -267,3 +269,4 @@ those
 whatever
 whichever
 your
+not
