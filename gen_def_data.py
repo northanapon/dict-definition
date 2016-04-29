@@ -22,7 +22,7 @@ def normalized_def2str(norm_def):
 word_filepath = 'data/norvig_ngram/count_1w.txt'
 stopword_filepath = 'data/wn_stop_words.txt'
 funcword_filepath = 'data/function_words.txt'
-w2vvocab_filepath = 'tmp.txt'#'data/w2v_vocab.txt'
+w2vvocab_filepath = 'data/w2v_vocab.txt'
 gcide_dir = 'output/gcide-entries/'
 output_filepath = 'output/top10kwords_2defs.tsv'
 
@@ -44,8 +44,14 @@ with open(funcword_filepath, 'r') as ifp:
         banned_words.add(line.strip().lower())
 with codecs.open(w2vvocab_filepath, 'r', 'utf-8') as ifp:
     for line in ifp:
-        print(line)
-        w2v_vocab.add(line.strip().split('\t')[1])
+        parts = line.strip().split('\t')
+        # XXX: There are empty words. Is it a bug?
+        if len(parts) <= 1:
+            continue
+        word = parts[1]
+        if '_' in word:
+            continue
+        w2v_vocab.add(word)
 
 ofp = codecs.open(output_filepath, 'w', 'utf-8')
 count = 0
