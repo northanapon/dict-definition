@@ -18,4 +18,10 @@ From Peter Norvig's [Ngrams](http://norvig.com/ngrams/)
 - [wn_stop_words.txt](https://github.com/NorThanapon/dict-definition/blob/master/data/wn_stop_words.txt) is adapted from Ted Pedersen's [WordNet Stop List](http://www.d.umn.edu/~tpederse/Group01/WordNet/wordnet-stoplist.html)
 
 # Word2Vec Vocabulary
-[w2v_vocab.txt](https://github.com/NorThanapon/dict-definition/blob/master/data/w2v_vocab.txt) is a mapping (index -> word) of the pre-trained word and phrase vectors available [here](https://code.google.com/archive/p/word2vec/)
+[w2v_vocab.txt.bz2](https://github.com/NorThanapon/dict-definition/blob/master/data/w2v_vocab.txt.bz2) is a mapping (index -> word) of the pre-trained word and phrase vectors available [here](https://code.google.com/archive/p/word2vec/). The file was generated using [gensim](https://github.com/piskvorky/gensim/).
+
+You will need to unzip the file using [bzip2's tools](http://www.bzip.org/).
+
+```bash
+  bunzip2 -k w2v_vocab.txt.bz2
+```

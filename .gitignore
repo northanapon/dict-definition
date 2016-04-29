@@ -2,4 +2,5 @@
 *.ignored
 data/gcide
 data/norvig_ngram
+data/word2vec_vocab.txt
 output/gcide-entries
