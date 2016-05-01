@@ -1,4 +1,4 @@
-XML Structures of tags that we are insterested in:
+XML Structures of tags that we are interested in:
 
 ```xml
 <entries>
@@ -40,13 +40,20 @@ XML Structures of tags that we are insterested in:
       <sd></sd><!-- Sub definition, similar to <sn> -->
       <fld></fld> <!-- Field of the sense -->
       <def></def> <!-- Definition, similar to entry.def-->
-      <mark></mark> <!-- A usage mark, some defs are bad -->
+      <mark> ... &amp; ...</mark> <!-- A usage mark, some defs are bad -->
       <!-- mark
+		- R: Rare
 		- Obs: Obsolete
-		- U. S.: United States
+		- U. S: United States
 		- Scot: Scotland, Scottish
+		- Prov. Eng.: Provincial England
 		- Colloq.: Colloquial
 		- Archaic: very old
+		- Mexico
+		- Sp. Amer
+		- Poetic
+		- Colloq. U. S
+		- Cant: Canticles?
 		-->
     </sn>
    	<mark></mark>

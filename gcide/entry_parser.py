@@ -95,6 +95,15 @@ def parse_amorph(n_amorph):
 # Definition
 #####################
 
+def _is_bad_mark(mark_text,
+                bad_marks=['r', 'obs', 'archaic', 'cant', 'scot',
+                           'mexico', 'provincial']):
+    mark_text = mark_text.lower()
+    for bm in bad_marks:
+        if bm in mark_text:
+            return True
+    return False
+
 def _extract_definitions(n_entry):
     definitions = []
     d = None
@@ -115,6 +124,9 @@ def _extract_definitions(n_entry):
                     definitions.append(d)
                 d = {}
             d['field'] = parse_fld(elem)
+        if elem.tag == 'mark':
+            if _is_bad_mark(elem.text):
+                d = None
         if elem.tag == 'sn':
             if d is not None and 'def' in d and len(d['def']) > 0:
                 definitions.append(d)
@@ -144,6 +156,9 @@ def parse_sn(n_sn):
     return definitions
 
 def parse_def(n_def):
+    n_mark = n_def.find('mark')
+    if n_mark is not None and _is_bad_mark(n_mark.text):
+        return '', None
     start_paren_end = False
     optional_spn = False
     definition = [n_def.text]
@@ -163,7 +178,7 @@ def parse_def(n_def):
                 start_paren_end = False
                 optional_spn = False
                 elem.tail = elem.tail[1:]
-        else:
+        elif elem.tag not in ['mark', 'pos']:
             definition.append(elem.text or '')
         if not optional_spn:
             definition.append(elem.tail or '')
