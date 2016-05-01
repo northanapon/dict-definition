@@ -52,18 +52,23 @@ def split_and_clean_norm_entries(norm_entries, keep_one=False):
 
 
 def clean_defs(defs, word,
-               bad_starts=['--', 'see', 'formerly'],
-               replace_starts=['also', 'now commonly']):
+               bad_starts=['--', 'see', 'formerly', 'thus'],
+               replace_starts=['also', 'now commonly', 'hence',
+                               'especially', ',', ':']):
     regex = re.compile(r'\b'+word+r'\b')
     new_defs = []
     for d in defs:
+        d = d.lower()
+        d = d.replace('esp.', 'especially')
+        d = d.replace('fig.:', '')
         parts = d.split('.')
-        d = parts[0].strip().lower()
+        d = parts[0].strip()
         if any(map(d.startswith, bad_starts)):
             continue
         for phrase in replace_starts:
             if d.startswith(phrase):
                 d = d.replace(phrase, '')
+                d = d.strip()
         if len(d) == 0:
             continue
         if regex.search(d) is not None:

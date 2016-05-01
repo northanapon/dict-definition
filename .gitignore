@@ -4,3 +4,5 @@ data/gcide
 data/norvig_ngram
 data/w2v_vocab.txt
 output/gcide-entries
+.ipynb_checkpoints/
+
