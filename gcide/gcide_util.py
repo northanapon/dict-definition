@@ -3,6 +3,7 @@ import StringIO
 import os
 import json
 from copy import deepcopy
+import re
 
 def index_gcide(gcide_dir):
     index = {}
@@ -33,6 +34,42 @@ def normalize_entries(entries):
             new_entry['def'] = sense[u'def']
             new_entries.append(new_entry)
     return new_entries
+
+def split_and_clean_norm_entries(norm_entries, keep_one=False):
+    new_norm_entries = []
+    for e in norm_entries:
+        defs = e['def'].split(';')
+        defs = clean_defs(defs, e['word'])
+        if len(defs) == 0:
+            continue
+        for d in defs:
+            new_e = deepcopy(e)
+            new_e['def'] = d
+            new_norm_entries.append(new_e)
+            if keep_one:
+                break
+    return new_norm_entries
+
+
+def clean_defs(defs, word,
+               bad_starts=['--', 'see', 'formerly'],
+               replace_starts=['also', 'now commonly']):
+    regex = re.compile(r'\b'+word+r'\b')
+    new_defs = []
+    for d in defs:
+        parts = d.split('.')
+        d = parts[0].strip().lower()
+        if any(map(d.startswith, bad_starts)):
+            continue
+        for phrase in replace_starts:
+            if d.startswith(phrase):
+                d = d.replace(phrase, '')
+        if len(d) == 0:
+            continue
+        if regex.search(d) is not None:
+            continue
+        new_defs.append(d)
+    return new_defs
 
 def _not_empty_def_filter(definition):
     return len(definition.strip()) > 0

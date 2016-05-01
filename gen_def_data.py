@@ -72,6 +72,7 @@ for word in words:
     gc_senses = gcu.filter_entries(gc_senses)
     gc_senses = gcu.topk_senses(gc_senses, 2)
     gc_senses = gcu.normalize_entries(gc_senses)
+    gc_senses = gcu.split_and_clean_norm_entries(gc_senses)
     if len(wn_senses) == 0 or len(gc_senses) == 0:
         continue
     for sense in wn_senses:
