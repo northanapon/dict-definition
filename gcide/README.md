@@ -69,3 +69,4 @@ So that the definition is *well-formed*. Here is the list of preprocessing:
 - If there are many sentences in a part, only the first part is considered a definition
 - A part that starts with `--`, `see`, `thus`, or `formerly` is removed.
 - Conjunctive phrases staring the part including `also`, `hence`, `especially`, and `now commonly` are removed.
+- A self-referent definition is remove

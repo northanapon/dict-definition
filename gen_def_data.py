@@ -59,6 +59,7 @@ for word in words:
     if not filter_word(word, banned_words, w2v_vocab):
         continue
     wn_senses = wn.synsets(word)
+    wn_senses = wnu.remove_person_name(wn_senses)
     gc_senses = None
     if word in gcide_index:
         gc_senses = gcide_index[word]
@@ -69,6 +70,7 @@ for word in words:
     wn_senses = wnu.filter_groups(wn_senses)
     wn_senses = wnu.topk_groups(wn_senses, 2)
     wn_senses = wnu.normalize_groups(wn_senses, word)
+    wn_senses = wnu.split_and_clean_norm_entries(wn_senses)
     gc_senses = gcu.filter_entries(gc_senses)
     gc_senses = gcu.topk_senses(gc_senses, 2)
     gc_senses = gcu.normalize_entries(gc_senses)

@@ -1,4 +1,19 @@
 from nltk.corpus import wordnet as wn
+import re
+from copy import deepcopy
+
+def is_person(sense):
+    return (sense.lexname() == 'noun.person' and
+            all(map(lambda x: x[0].isupper(),
+                    sense.lemma_names())))
+
+def remove_person_name(senses):
+    new_senses = []
+    for sense in senses:
+        if is_person(sense):
+            continue
+        new_senses.append(sense)
+    return new_senses
 
 def group_senses_by_pos(senses):
     ''' Group senses by Part of speech '''
@@ -64,3 +79,38 @@ def filter_groups(groups, def_filter_fn=_not_empty_def_filter):
         if len(new_group) > 0:
             new_groups[pos] = new_group
     return new_groups
+
+def split_and_clean_norm_entries(norm_entries, keep_one=False):
+    new_norm_entries = []
+    for e in norm_entries:
+        defs = e['def'].split(';')
+        defs = clean_defs(defs, e['word'])
+        if len(defs) == 0:
+            continue
+        for d in defs:
+            new_e = deepcopy(e)
+            if new_e['pos'] == 'v':
+                d = u'to ' + d
+            new_e['def'] = d
+            new_norm_entries.append(new_e)
+            if keep_one:
+                break
+    return new_norm_entries
+
+def clean_defs(defs, word):
+    paren_regex = re.compile(r'^\(.+\)')
+    regex = re.compile(r'\b'+word+r'\b')
+    new_defs = []
+    for d in defs:
+        d = d.strip().lower()
+        d = d.replace('_', ' ')
+        d = re.sub(r'[\'"`\(\)]', '', d)
+        m = paren_regex.match(d)
+        if m is not None:
+            d = d[m.end():]
+        if len(d) == 0:
+            continue
+        if regex.search(d) is not None:
+            continue
+        new_defs.append(d)
+    return new_defs
