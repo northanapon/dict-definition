@@ -20,20 +20,24 @@ def normalized_def2str(norm_def):
     return u'\t'.join(a)
 
 word_filepath = 'data/norvig_ngram/count_1w.txt'
+gsl_word_filepath = 'data/gsl_words.txt'
 stopword_filepath = 'data/wn_stop_words.txt'
 funcword_filepath = 'data/function_words.txt'
 w2vvocab_filepath = 'data/w2v_vocab.txt'
 gcide_dir = 'output/gcide-entries/'
-output_filepath = 'output/top10kwords_2defs.tsv'
+output_filepath = 'output/common_words_defs.tsv'
 
 gcide_index = gcu.index_gcide(gcide_dir)
-words = []
+words = set()
 banned_words = set()
 w2v_vocab = set()
 
 with codecs.open(word_filepath, 'r', 'utf-8') as ifp:
     for line in ifp:
-        words.append(line.split('\t')[0])
+        words.add(line.split('\t')[0])
+with codecs.open(gsl_word_filepath, 'r', 'utf-8') as ifp:
+    for line in ifp:
+        words.add(line.split('\t')[0].lower())
 
 
 with open(stopword_filepath, 'r') as ifp:
@@ -55,7 +59,10 @@ with codecs.open(w2vvocab_filepath, 'r', 'utf-8') as ifp:
 
 ofp = codecs.open(output_filepath, 'w', 'utf-8')
 count = 0
+num_words = 0
+print('total words: ' + str(len(words)))
 for word in words:
+    num_words = num_words + 1
     if not filter_word(word, banned_words, w2v_vocab):
         continue
     wn_senses = wn.synsets(word)
@@ -84,6 +91,8 @@ for word in words:
         ofp.write(normalized_def2str(sense))
         ofp.write('\n')
     count = count + 1
-    if count >= 10000:
+    if count % 1000 == 0:
+        print(str(count) + '/' + str(num_words))
+    if count >= 50000:
         break
 ofp.close()
