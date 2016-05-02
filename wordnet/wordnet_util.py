@@ -104,10 +104,10 @@ def clean_defs(defs, word):
     for d in defs:
         d = d.strip().lower()
         d = d.replace('_', ' ')
-        d = re.sub(r'[\'"`\(\)]', '', d)
         m = paren_regex.match(d)
         if m is not None:
             d = d[m.end():]
+        d = re.sub(r'[\'"`\(\)]', '', d)
         if len(d) == 0:
             continue
         if regex.search(d) is not None:
