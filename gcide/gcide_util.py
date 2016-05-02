@@ -52,15 +52,24 @@ def split_and_clean_norm_entries(norm_entries, keep_one=False):
 
 
 def clean_defs(defs, word,
-               bad_starts=['--', 'see', 'formerly', 'thus'],
-               replace_starts=['also', 'now commonly', 'hence',
-                               'especially', ',', ':']):
+               bad_starts=['--', 'see', 'formerly', 'thus', 'for example'],
+               replace_starts=['also', 'now commonly', 'hence', 'or',
+                               'especially', ',', ':', '(', ')'],
+               replace_dict={'esp.': 'especially',
+                             'pl.': 'plural',
+                             'specif.': 'specifically',
+                             'e.g.': 'for example',
+                             'e. g.': 'for example',
+                             'illust.': 'illustration',
+                             'cf.': 'confer',
+                             'fig.:': '', "pl,"
+                             'etc.': 'etc'}):
     regex = re.compile(r'\b'+word+r'\b')
     new_defs = []
     for d in defs:
         d = d.lower()
-        d = d.replace('esp.', 'especially')
-        d = d.replace('fig.:', '')
+        for word in replace_dict:
+            d = d.replace(word, replace_dict[word])
         parts = d.split('.')
         d = parts[0].strip()
         if any(map(d.startswith, bad_starts)):
@@ -76,10 +85,17 @@ def clean_defs(defs, word,
         new_defs.append(d)
     return new_defs
 
-def _not_empty_def_filter(definition):
+def _not_empty_def_filter(sense):
+    definition = sense[u'def']
     return len(definition.strip()) > 0
 
-def filter_entries(entries, def_filter_fn=_not_empty_def_filter):
+def _not_plural_def_filter(sense):
+    definition = sense[u'def']
+    if definition.strip().lower().startswith('pl. of'):
+        return False
+    return _not_empty_def_filter(sense)
+
+def filter_entries(entries, def_filter_fn=_not_plural_def_filter):
     ''' Remove entries with empty definition or POS '''
     new_entries = []
     for entry in entries:
@@ -93,7 +109,7 @@ def filter_entries(entries, def_filter_fn=_not_empty_def_filter):
         for sense in entry[u'senses']:
             if u'def' not in sense:
                 continue
-            if not def_filter_fn(sense[u'def']):
+            if not def_filter_fn(sense):
                 continue
             senses.append(sense)
         if len(senses) > 0 and len(senses) != len(entry[u'senses']):

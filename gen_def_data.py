@@ -3,6 +3,17 @@ import gcide.gcide_util as gcu
 import wordnet.wordnet_util as wnu
 from nltk.corpus import wordnet as wn
 
+def wn_lemmatize(word):
+    senses = wn.synsets(word)
+    lemmas = set()
+    for sense in senses:
+        for lname in sense.lemma_names():
+            if '_' in lname or ' ' in lname:
+                continue
+            lemmas.add(lname)
+    return lemmas
+
+
 def filter_word(word, banned_words, w2v_vocab):
     if (len(word) < 3
         or word in banned_words
@@ -38,7 +49,11 @@ with codecs.open(word_filepath, 'r', 'utf-8') as ifp:
 with codecs.open(gsl_word_filepath, 'r', 'utf-8') as ifp:
     for line in ifp:
         words.add(line.split('\t')[0].lower())
-
+lemma_words = set()
+for word in words:
+    for l in wn_lemmatize(word):
+        lemma_words.add(l)
+words = lemma_words
 
 with open(stopword_filepath, 'r') as ifp:
     for line in ifp:
@@ -75,11 +90,11 @@ for word in words:
     wn_senses = wnu.group_senses_by_pos(wn_senses)
     wnu.reorder_groups(wn_senses, word)
     wn_senses = wnu.filter_groups(wn_senses)
-    wn_senses = wnu.topk_groups(wn_senses, 2)
+    wn_senses = wnu.topk_groups(wn_senses, 3)
     wn_senses = wnu.normalize_groups(wn_senses, word)
     wn_senses = wnu.split_and_clean_norm_entries(wn_senses)
     gc_senses = gcu.filter_entries(gc_senses)
-    gc_senses = gcu.topk_senses(gc_senses, 2)
+    gc_senses = gcu.topk_senses(gc_senses, 3)
     gc_senses = gcu.normalize_entries(gc_senses)
     gc_senses = gcu.split_and_clean_norm_entries(gc_senses)
     if len(wn_senses) == 0 or len(gc_senses) == 0:
