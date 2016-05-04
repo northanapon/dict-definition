@@ -5,6 +5,7 @@ Preprocessing scripts to read definitions and other information from dictionarie
 - Python 2.7
 - [nltk](http://www.nltk.org/) >= 3.1
 - [wordnik](https://github.com/wordnik/wordnik-python) >= 2.1.3
+- [numpy](http://www.numpy.org/) >= 1.10
 
 ## Obtaining data
 - [Wordnik](https://www.wordnik.com/) provides an API to get word definitions and other information from *multiple* dictionaries. You will need an API Key to access (see [Developer site](http://developer.wordnik.com/)).
