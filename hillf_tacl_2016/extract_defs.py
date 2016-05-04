@@ -24,11 +24,16 @@ ifp.close()
 ifp = open(os.path.join(data_dir, emb_fp))
 emb = pickle.load(ifp)
 ifp.close()
+emb_index = {}
+for k in emb:
+    a = emb[k]
+    a.flags.writeable = False
+    emb_index[hash(a.data)] = k
 print('Definitions: ' + str(len(definitions)))
 print('Vocab size: ' + str(len(i2w)))
 print('Emb size: ' + str(len(emb)) + ', ' + str(len(emb['a'])))
 
-print('Processing data... (this will take very long time)')
+print('Processing data... (this will take a minute)')
 ofp = codecs.open(output_filepath, 'w', 'utf-8')
 prev_word = None
 prev_temb = None
@@ -39,10 +44,8 @@ with ProgressBar(max_value=len(definitions)) as pb:
         if prev_temb is not None and (temb - prev_temb).sum() == 0:
             word = prev_word
         if word is None:
-            for k in emb:
-                if (emb[k] - temb).sum() == 0:
-                    word = k
-                    break
+            temb.flags.writeable = False
+            word = emb_index[hash(temb.data)]
         if word is None:
             print('Line: ' + str(i) + ' missing')
             word = ''
