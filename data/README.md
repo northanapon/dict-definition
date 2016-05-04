@@ -10,8 +10,16 @@
 
 From Peter Norvig's [Ngrams](http://norvig.com/ngrams/)
 
-1. Downlaod [unigram count](http://norvig.com/ngrams/count_1w.txt)
+1. Download [unigram count](http://norvig.com/ngrams/count_1w.txt)
 2. Place it in `norvig_ngram` under this directory
+
+## HillF_TACL2016
+
+1. Download [training data](http://www.cl.cam.ac.uk/~fh295/defgen_data.tgz)
+2. Unzip the file
+3. Rename the directory to `train`
+4. Place it in `hillf_tacl_2016` under this directory
+5. Do the same with [evaluation data](http://www.cl.cam.ac.uk/~fh295/Defgen_evals.tgz) and the directory name is `eval`
 
 # Function words and Stop words
 - [function_words.txt](https://github.com/NorThanapon/dict-definition/blob/master/data/function_words.txt) is compiled from [function word lists](http://www.sequencepublishing.com/academic.html) by Leah Gilner and Franc Morales

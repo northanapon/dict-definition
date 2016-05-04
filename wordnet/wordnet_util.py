@@ -98,7 +98,7 @@ def split_and_clean_norm_entries(norm_entries, keep_one=False):
     return new_norm_entries
 
 def clean_defs(defs, word):
-    paren_regex = re.compile(r'^\(.+\)')
+    paren_regex = re.compile(r'^\(.+?\)')
     regex = re.compile(r'\b'+word+r'\b')
     new_defs = []
     for d in defs:
