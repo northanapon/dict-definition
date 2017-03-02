@@ -1,5 +1,5 @@
 # dict-definition
-Preprocessing scripts to read definitions and other information from dictionaries
+Preprocessing scripts to read definitions and other information from dictionaries. This repository is for AAAI2017 paper: "Definition Modeling: Learning to define word embeddings in natural language".
 
 ## Dependencies
 - Python 2.7
