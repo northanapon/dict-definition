@@ -1,9 +1,9 @@
 *.pyc
 *.ignored
-data/gcide
-data/hillf_tacl_2016
-data/norvig_ngram
-data/w2v_vocab.txt
-output/gcide-entries
+/notebooks
+/output
 .ipynb_checkpoints/
-
+/data/gcide/
+/data/hillf_tacl_2016/
+/data/norvig_ngram/
+/data/w2v_vocab.txt
