@@ -4,6 +4,7 @@
 /output
 .ipynb_checkpoints/
 /data/gcide/
+/data/wn18/
 /data/hillf_tacl_2016/
 /data/w2v_vocab.txt
 /data/wordlist/w2v_vocab.txt
