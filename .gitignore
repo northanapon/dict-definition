@@ -5,5 +5,8 @@
 .ipynb_checkpoints/
 /data/gcide/
 /data/hillf_tacl_2016/
-/data/norvig_ngram/
 /data/w2v_vocab.txt
+/data/wordlist/w2v_vocab.txt
+.DS_Store
+.remote-sync.json
+/data/common_wordnet/
