@@ -49,7 +49,7 @@ def clean_definition(definition):
             break
     return definition.strip()
 
-def replace_unk(entries, vocab):
+def replace_unk(entries, vocab, remove_unk):
     new_entries = {}
     for word in entries:
         if word not in vocab:
@@ -63,6 +63,8 @@ def replace_unk(entries, vocab):
                     tokens[i] = "<unk>"
                     c += 1
             if c == len(tokens):
+                continue
+            if remove_unk and c > 0:
                 continue
             definitions.append((u' '.join(tokens), others))
         if len(definitions) == 0:
@@ -85,7 +87,7 @@ def main(opt):
         if opt.universe_vocab_path is not None:
             vocab = word_sampler.load_wordset_from_files(
                 [opt.universe_vocab_path], lower=False)
-            entries = replace_unk(entries, vocab)
+            entries = replace_unk(entries, vocab, opt.remove_unk_defs)
             words = entries.keys()
         split_names = ['train.txt', 'valid.txt', 'test.txt']
         word_splits = split_words(words)
@@ -116,6 +118,9 @@ if __name__ == '__main__':
         action='store_true')
     aparser.add_argument(
         '--remove_non_char_words', dest='remove_non_char_words',
+        action='store_true')
+    aparser.add_argument(
+        '--remove_unk_defs', dest='remove_unk_defs',
         action='store_true')
     aparser.add_argument(
         '--universe_vocab_path', default=None, type=str)

@@ -30,5 +30,7 @@ if __name__ == '__main__':
         help='type of the corpus')
     aparser.add_argument(
         '--only_first_sense', dest='only_first_sense', action='store_true')
+    aparser.add_argument(
+        '--lemmatize', dest='lemmatize', action='store_true')
     opt = aparser.parse_args()
     main(opt)

@@ -57,3 +57,32 @@ def load_wordset_from_files(filepath_list, lower=False):
                     w = w.lower()
                 wordset.add(w)
     return wordset
+
+if __name__ == '__main__':
+    import os
+    data_dir = 'data/wordlist'
+    files = ['gsl_words.txt', 'oxford3k_us_news.txt',
+             'ptb_vocab.txt', 'web1t_top_100k.txt']
+    words = load_wordset_from_files([os.path.join(data_dir, f) for f in files],
+                                    lower=True)
+    new_words = set()
+    for w in words:
+        if len(w) > 1:
+            new_words.add(w)
+    words = new_words
+    vocab = load_wordset_from_files(
+        [os.path.join(data_dir, 'glove.42B.300d.vocab')], lower=True)
+    words = intersect_words(words, vocab, lower=True)
+    print('Number of words: {}'.format(len(words)))
+    lemmas = set()
+    output_path = os.path.join(data_dir, 'common_words.v3.txt')
+    with codecs.open(output_path, 'w', 'utf-8') as ofp:
+        for w in words:
+            lemma = lemmatize(w, try_all_pos_tags=True)
+            lemmas.add(lemma)
+            ofp.write('{}\n'.format(w))
+    print('Number of lemmas: {}'.format(len(lemmas)))
+    output_path = os.path.join(data_dir, 'common_lemmas.v3.txt')
+    with codecs.open(output_path, 'w', 'utf-8') as ofp:
+        for lemma in lemmas:
+            ofp.write('{}\n'.format(lemma))
