@@ -49,6 +49,28 @@ def clean_definition(definition):
             break
     return definition.strip()
 
+def replace_unk(entries, vocab):
+    new_entries = {}
+    for word in entries:
+        if word not in vocab:
+            continue
+        definitions = []
+        for definition, others in entries[word]:
+            tokens = word_tokenize(definition)
+            c = 0
+            for i in range(len(tokens)):
+                if tokens[i] not in vocab:
+                    tokens[i] = "<unk>"
+                    c += 1
+            if c == len(tokens):
+                continue
+            definitions.append((u' '.join(tokens), others))
+        if len(definitions) == 0:
+            continue
+        new_entries[word] = definitions
+    return new_entries
+
+
 def main(opt):
     with codecs.open(opt.input_filepath, mode='r', encoding='utf-8') as ifp:
         entries = read_tsv(ifp)
@@ -60,11 +82,11 @@ def main(opt):
                 [opt.function_words_path], lower=True)
             words = word_sampler.remove_banned_words(words, function_words,
                                                      lower=True)
-        if opt.intersect_words_path is not None:
-            intersect_words = word_sampler.load_wordset_from_files(
-                [opt.intersect_words_path], lower=True)
-            words = word_sampler.intersect_words(words, intersect_words,
-                                                 lower=True)
+        if opt.universe_vocab_path is not None:
+            vocab = word_sampler.load_wordset_from_files(
+                [opt.universe_vocab_path], lower=False)
+            entries = replace_unk(entries, vocab)
+            words = entries.keys()
         split_names = ['train.txt', 'valid.txt', 'test.txt']
         word_splits = split_words(words)
         for i, split in enumerate(word_splits):
@@ -96,7 +118,7 @@ if __name__ == '__main__':
         '--remove_non_char_words', dest='remove_non_char_words',
         action='store_true')
     aparser.add_argument(
-        '--intersect_words_path', default=None, type=str)
+        '--universe_vocab_path', default=None, type=str)
     aparser.add_argument(
         '--function_words_path', type=str,
         default="data/wordlist/function_words.txt")

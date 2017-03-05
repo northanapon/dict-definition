@@ -11,3 +11,4 @@
 .DS_Store
 .remote-sync.json
 /data/common_wordnet/
+/data/wordlist/glove.840B.300d.vocab
