@@ -2,8 +2,6 @@ from neobunch import Bunch
 from nltk.corpus import wordnet as wn
 import re
 
-from definition.words import word_sampler
-
 class WordNetParser(object):
 
     def __init__(self, opt):
@@ -42,8 +40,6 @@ class WordNetParser(object):
     def get_entries(self, word):
         entries = []
         query = word
-        if opt.lemmatize:
-            query = word_sampler.lemmatize(word, try_all_pos_tags=True)
         senses = wn.synsets(query)
         for sense in senses:
             entries.append(self.get_entry(word, sense))

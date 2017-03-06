@@ -24,14 +24,30 @@ def read_tsv(ifp):
         entries[word].append([definition, others])
     return entries
 
+def map_lemmas_to_words(lemmas, lemma_words):
+    words = []
+    for lemma in lemmas:
+        words.extend(lemma_words[lemma])
+    return words
+
 def split_words(words, valid=.1, test=.1):
-    n_valid = int(len(words) * valid)
-    n_test = int(len(words) * test)
-    shuffled = list(words)
+    lemma_words = {}
+    for w in words:
+        lemma = word_sampler.lemmatize(w, try_all_pos_tags=False)
+        if lemma not in lemma_words:
+            lemma_words[lemma] = []
+        lemma_words[lemma].append(w)
+    lemmas = lemma_words.keys()
+    n_valid = int(len(lemmas) * valid)
+    n_test = int(len(lemmas) * test)
+    shuffled = list(lemmas)
     shuffle(shuffled)
-    valid_words = shuffled[0:n_valid]
-    test_words = shuffled[n_valid:n_valid+n_test]
-    train_words = shuffled[n_valid+n_test:]
+    valid_lemmas = shuffled[0:n_valid]
+    test_lemmas = shuffled[n_valid:n_valid+n_test]
+    train_lemmas = shuffled[n_valid+n_test:]
+    train_words = map_lemmas_to_words(train_lemmas, lemma_words)
+    valid_words = map_lemmas_to_words(valid_lemmas, lemma_words)
+    test_words = map_lemmas_to_words(test_lemmas, lemma_words)
     return (train_words, valid_words, test_words)
 
 def clean_definition(definition):
@@ -94,7 +110,7 @@ def main(opt):
         for i, split in enumerate(word_splits):
             output_filepath = os.path.join(
                 opt.output_dir,
-                '{}_{}'.format(opt.output_prefix, split_names[i]))
+                '{}'.format(split_names[i]))
             with codecs.open(output_filepath, 'w', encoding='utf-8') as ofp:
                 for word in split:
                     for definitions in entries[word]:
@@ -110,9 +126,6 @@ if __name__ == '__main__':
     aparser.add_argument(
         'output_dir', type=str,
         help='output directory')
-    aparser.add_argument(
-        '--output_prefix', type=str, default='',
-        help='output filename prefix')
     aparser.add_argument(
         '--remove_function_words', dest='remove_function_words',
         action='store_true')
