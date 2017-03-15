@@ -1,15 +1,15 @@
 import argparse
 import codecs
 from definition.readers.wn18 import WN18Parser
-from definition.readers.wordnet import WordNetParser
+from definition.readers.wordnet import NLTKWordNetParser
 from definition.words import word_sampler
 
 
 def get_parser(name, opt):
     if name == 'wn18':
         return WN18Parser(opt)
-    if name == 'wordnet':
-        return WordNetParser(opt)
+    if name == 'nltk_wordnet':
+        return NLTKWordNetParser(opt)
 
 
 def main(opt):
@@ -29,7 +29,7 @@ if __name__ == '__main__':
         'output_filepath', type=str,
         help='output file path')
     aparser.add_argument(
-        'data_name', choices=['wn18', 'wordnet'],
+        'data_name', choices=['wn18', 'nltk_wordnet'],
         help='type of the corpus')
     aparser.add_argument(
         '--only_first_sense', dest='only_first_sense', action='store_true')

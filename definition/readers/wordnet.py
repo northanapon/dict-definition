@@ -3,7 +3,7 @@ from nltk.corpus import wordnet as wn
 import re
 
 
-class WordNetParser(object):
+class NLTKWordNetParser(object):
 
     def __init__(self, opt):
         self.opt = opt
