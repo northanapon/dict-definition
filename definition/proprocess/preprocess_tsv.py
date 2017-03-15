@@ -10,6 +10,7 @@ from definition.words import word_sampler
 _delimiter = re.compile(r'[;:]')
 _removed = re.compile(r'\(.+\)')
 
+
 def read_tsv(ifp):
     entries = {}
     for line in ifp:
@@ -24,11 +25,13 @@ def read_tsv(ifp):
         entries[word].append([definition, others])
     return entries
 
+
 def map_lemmas_to_words(lemmas, lemma_words):
     words = []
     for lemma in lemmas:
         words.extend(lemma_words[lemma])
     return words
+
 
 def split_words(words, valid=.1, test=.1):
     lemma_words = {}
@@ -50,6 +53,7 @@ def split_words(words, valid=.1, test=.1):
     test_words = map_lemmas_to_words(test_lemmas, lemma_words)
     return (train_words, valid_words, test_words)
 
+
 def clean_definition(definition):
     # take only first definition (: or ;)
     m = _delimiter.search(definition)
@@ -65,7 +69,8 @@ def clean_definition(definition):
             break
     return definition.strip()
 
-def replace_unk(entries, vocab, remove_unk):
+
+def replace_unk(entries, vocab, remove_unk, replace_unk):
     new_entries = {}
     for word in entries:
         if word not in vocab:
@@ -76,7 +81,8 @@ def replace_unk(entries, vocab, remove_unk):
             c = 0
             for i in range(len(tokens)):
                 if tokens[i] not in vocab:
-                    tokens[i] = "<unk>"
+                    if replace_unk:
+                        tokens[i] = "<unk>"
                     c += 1
             if c == len(tokens):
                 continue
@@ -103,7 +109,8 @@ def main(opt):
         if opt.universe_vocab_path is not None:
             vocab = word_sampler.load_wordset_from_files(
                 [opt.universe_vocab_path], lower=False)
-            entries = replace_unk(entries, vocab, opt.remove_unk_defs)
+            entries = replace_unk(
+                entries, vocab, opt.remove_unk_defs, opt.replace_unk_words)
             words = entries.keys()
         split_names = ['train.txt', 'valid.txt', 'test.txt']
         word_splits = split_words(words)
@@ -116,6 +123,7 @@ def main(opt):
                     for definitions in entries[word]:
                         ofp.write('{}\t{}\t{}\n'.format(
                             word, definitions[1], definitions[0]))
+
 
 if __name__ == '__main__':
     aparser = argparse.ArgumentParser(
@@ -131,6 +139,9 @@ if __name__ == '__main__':
         action='store_true')
     aparser.add_argument(
         '--remove_non_char_words', dest='remove_non_char_words',
+        action='store_true')
+    aparser.add_argument(
+        '--replace_unk_words', dest='replace_unk_words',
         action='store_true')
     aparser.add_argument(
         '--remove_unk_defs', dest='remove_unk_defs',

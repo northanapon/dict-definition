@@ -1,5 +1,6 @@
 from neobunch import Bunch
 
+
 class WN18Parser(object):
 
     def __init__(self, opt):
@@ -15,9 +16,9 @@ class WN18Parser(object):
     def parse_line(self, line):
         parts = line.strip().split('\t')
         output = Bunch(self.parse_entity(parts[1]),
-            wn_id=parts[0],
-            wn_key=parts[1],
-            definition=parts[-1])
+                       wn_id=parts[0],
+                       wn_key=parts[1],
+                       definition=parts[-1])
         return output
 
     def to_list(self, entry,

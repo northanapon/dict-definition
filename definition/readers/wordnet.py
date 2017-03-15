@@ -2,6 +2,7 @@ from neobunch import Bunch
 from nltk.corpus import wordnet as wn
 import re
 
+
 class WordNetParser(object):
 
     def __init__(self, opt):
@@ -26,7 +27,7 @@ class WordNetParser(object):
         synset.proper_noun = self.is_proper_noun(sense)
         freq = 0
         for lemma in sense.lemmas():
-            freq+=lemma.count()
+            freq += lemma.count()
         synset.lemma_freq = freq
         return synset
 

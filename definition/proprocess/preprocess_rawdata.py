@@ -4,17 +4,20 @@ from definition.readers.wn18 import WN18Parser
 from definition.readers.wordnet import WordNetParser
 from definition.words import word_sampler
 
+
 def get_parser(name, opt):
     if name == 'wn18':
         return WN18Parser(opt)
     if name == 'wordnet':
         return WordNetParser(opt)
 
+
 def main(opt):
     parser = get_parser(opt.data_name, opt)
-    with codecs.open(opt.input_filepath, mode='r', encoding='utf-8') as ifp:
-        with codecs.open(opt.output_filepath, mode='w', encoding='utf-8') as ofp:
+    with codecs.open(opt.input_filepath, 'r', 'utf-8') as ifp:
+        with codecs.open(opt.output_filepath, 'w', 'utf-8') as ofp:
             parser.preprocess(ifp, ofp)
+
 
 if __name__ == '__main__':
     aparser = argparse.ArgumentParser(

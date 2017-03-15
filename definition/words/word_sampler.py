@@ -3,6 +3,7 @@ import codecs
 from numpy.random import choice
 from nltk.stem import WordNetLemmatizer
 
+
 def remove_words_with_chars(word_list, regex=r"[^a-zA-Z]+"):
     new_words = []
     p = re.compile(regex)
@@ -11,6 +12,7 @@ def remove_words_with_chars(word_list, regex=r"[^a-zA-Z]+"):
             continue
         new_words.append(word)
     return new_words
+
 
 def remove_banned_words(word_list, banned_words, lower=False):
     bwset = set(banned_words)
@@ -22,6 +24,7 @@ def remove_banned_words(word_list, banned_words, lower=False):
             words.append(w)
     return words
 
+
 def intersect_words(a, bset, lower=False):
     new = []
     for w in a:
@@ -30,6 +33,7 @@ def intersect_words(a, bset, lower=False):
         if w in bset:
             new.append(w)
     return new
+
 
 def lemmatize(w, wnl=WordNetLemmatizer(), pos='n', try_all_pos_tags=False,
               pos_to_try=['n', 'v', 'a', 's', 'r']):
@@ -42,10 +46,12 @@ def lemmatize(w, wnl=WordNetLemmatizer(), pos='n', try_all_pos_tags=False,
     else:
         return wnl.lemmatize(w, pos=pos)
 
+
 def sample_words(word_list, num_samples):
     idx = range(len(word_list))
     sampled_idx = choice(idx, size=num_samples, replace=False)
     return [word_list[i] for i in sample_idx]
+
 
 def load_wordset_from_files(filepath_list, lower=False):
     wordset = set()
@@ -57,6 +63,7 @@ def load_wordset_from_files(filepath_list, lower=False):
                     w = w.lower()
                 wordset.add(w)
     return wordset
+
 
 if __name__ == '__main__':
     import os
@@ -71,7 +78,7 @@ if __name__ == '__main__':
             new_words.add(w)
     words = new_words
     vocab = load_wordset_from_files(
-        [os.path.join(data_dir, 'glove.42B.300d.vocab')], lower=True)
+        [os.path.join(data_dir, 'w2v_vocab.txt')], lower=True)
     words = intersect_words(words, vocab, lower=True)
     print('Number of words: {}'.format(len(words)))
     lemmas = set()
