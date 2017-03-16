@@ -9,7 +9,9 @@
 /data/w2v_vocab.txt
 /data/wordlist/w2v_vocab.txt
 /data/wordlist/glove.42B.300d.vocab
+/data/wndb
 .DS_Store
 .remote-sync.json
 /data/common_wordnet/
 /data/wordlist/glove.840B.300d.vocab
+/data/wordnet/

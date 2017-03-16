@@ -2,6 +2,7 @@ import argparse
 import codecs
 from definition.readers.wn18 import WN18Parser
 from definition.readers.wordnet import NLTKWordNetParser
+from definition.readers.wordnet import DBWordNetParser
 from definition.words import word_sampler
 
 
@@ -10,6 +11,9 @@ def get_parser(name, opt):
         return WN18Parser(opt)
     if name == 'nltk_wordnet':
         return NLTKWordNetParser(opt)
+    if name == 'wordnet':
+        opt.wndb_dir = 'data/wndb'
+        return DBWordNetParser(opt)
 
 
 def main(opt):
@@ -29,7 +33,7 @@ if __name__ == '__main__':
         'output_filepath', type=str,
         help='output file path')
     aparser.add_argument(
-        'data_name', choices=['wn18', 'nltk_wordnet'],
+        'data_name', choices=['wn18', 'nltk_wordnet', 'wordnet'],
         help='type of the corpus')
     aparser.add_argument(
         '--only_first_sense', dest='only_first_sense', action='store_true')

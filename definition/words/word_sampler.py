@@ -2,6 +2,7 @@ import re
 import codecs
 from numpy.random import choice
 from nltk.stem import WordNetLemmatizer
+from nltk.corpus import wordnet as wn
 
 
 def remove_words_with_chars(word_list, regex=r"[^a-zA-Z]+"):
@@ -35,8 +36,17 @@ def intersect_words(a, bset, lower=False):
     return new
 
 
+def lemmatize_all(w, wnl=WordNetLemmatizer(),
+                  pos_to_try=[wn.NOUN, wn.VERB, wn.ADJ, wn.ADV]):
+    lemmas = []
+    for pos in pos_to_try:
+        lemma = wnl.lemmatize(w, pos=pos)
+        lemmas.append((lemma, pos))
+    return lemmas
+
+
 def lemmatize(w, wnl=WordNetLemmatizer(), pos='n', try_all_pos_tags=False,
-              pos_to_try=['n', 'v', 'a', 's', 'r']):
+              pos_to_try=[wn.NOUN, wn.VERB, wn.ADJ, wn.ADV]):
     if try_all_pos_tags:
         for pos in pos_to_try:
             lemma = wnl.lemmatize(w, pos=pos)

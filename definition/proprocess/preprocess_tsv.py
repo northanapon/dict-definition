@@ -67,7 +67,8 @@ def clean_definition(definition):
                                         definition[m.end():].strip())
         else:
             break
-    return definition.strip()
+    definition = definition.strip()
+    return definition
 
 
 def replace_unk(entries, vocab, remove_unk, replace_unk):
