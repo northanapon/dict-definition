@@ -16,7 +16,7 @@ def read_tsv(ifp):
     for line in ifp:
         parts = line.strip().split('\t')
         word = parts[0]
-        definition = clean_definition(parts[-1])
+        definition = clean_definition(word, parts[-1])
         if len(definition) == 0:
             continue
         others = '\t'.join(parts[1:-1])
@@ -54,8 +54,8 @@ def split_words(words, valid=.1, test=.1):
     return (train_words, valid_words, test_words)
 
 
-def clean_definition(definition):
-    # take only first definition (: or ;)
+def clean_definition(word, definition):
+    # take only first definition `:` or `;`
     m = _delimiter.search(definition)
     if m is not None:
         definition = definition[0:m.start()]
@@ -67,6 +67,14 @@ def clean_definition(definition):
                                         definition[m.end():].strip())
         else:
             break
+    tokens = word_tokenize(definition)
+    word_lemmas = set([p[0] for p in word_sampler.lemmatize_all(word)])
+    tokens_lemmas = set()
+    for token in tokens:
+        tokens_lemmas = tokens_lemmas.union(
+            set([p[0] for p in word_sampler.lemmatize_all(token)]))
+    if len(word_lemmas.intersection(tokens_lemmas)) > 0:
+        return ""
     definition = definition.strip()
     return definition
 
@@ -78,7 +86,7 @@ def replace_unk(entries, vocab, remove_unk, replace_unk):
             continue
         definitions = []
         for definition, others in entries[word]:
-            tokens = word_tokenize(definition)
+            tokens = definition.split()
             c = 0
             for i in range(len(tokens)):
                 if tokens[i] not in vocab:
@@ -146,6 +154,9 @@ if __name__ == '__main__':
         action='store_true')
     aparser.add_argument(
         '--remove_unk_defs', dest='remove_unk_defs',
+        action='store_true')
+    aparser.add_argument(
+        '--remove_self_ref', dest='remove_self_ref',
         action='store_true')
     aparser.add_argument(
         '--universe_vocab_path', default=None, type=str)
