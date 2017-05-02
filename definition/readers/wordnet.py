@@ -99,13 +99,29 @@ class DBWordNetParser(object):
 
     _POS_FILE_MAP_ = {'n': 'noun', 'v': 'verb', 'a': 'adj', 'r': 'adv'}
     _SYNSET_TYPE_MAP_ = [None, 'n', 'v', 'a', 'r', 's']
+    _PROPER_NOUN_REGEX_ = re.compile(r'^(([A-Z]|_(for|the|of|to)_)[^_]+_?)+$')
 
-    def to_list(self, word, entry, inflected=False):
+    def to_list(self, word, entry, inflected=False, maybe_proper_noun=False):
         source = 'lemma'
+        # proper_noun = 'regular_word'
         if inflected:
             source = 'inflection'
+        # if maybe_proper_noun:
+        #     proper_noun = 'could_be_proper_nound'
+        if not inflected:
+            for eword in entry.words:
+                if eword.lower() == word:
+                    word = eword
+                    break
+        else:
+            if entry.lemma == word[:-1] and word[-1] == 's':
+                for eword in entry.words:
+                    if eword.lower() == entry.lemma:
+                        word = eword + 's'
+                        break
         output = [word, entry.lemma, entry.synset_type,
-                  str(entry.sense_number), entry.pos, source, entry.gloss]
+                  str(entry.sense_number), entry.pos, source,
+                  ','.join(entry.words), entry.gloss]
         return output
 
     def get_idx_entries(self, word, try_lemma=True):
@@ -131,7 +147,8 @@ class DBWordNetParser(object):
                               pos=idx_entry.pos,
                               synset_type=data_entry.synset_type,
                               sense_number=self.sense_numbers[sense_key],
-                              gloss=data_entry.gloss)
+                              gloss=data_entry.gloss,
+                              words=[e.word for e in data_entry.words])
                 out_entries.append(entry)
         return out_entries
 
@@ -140,9 +157,30 @@ class DBWordNetParser(object):
             word = line.strip()
             idx_entries, inflected = self.get_idx_entries(word)
             entries = self.get_entries(idx_entries)
+            maybe_proper_noun = False
             for entry in entries:
+                for other_word in entry.words:
+                    if DBWordNetParser.is_proper_noun(other_word):
+                        maybe_proper_noun = True
+                        break
+            for entry in entries:
+                if inflected and DBWordNetParser.is_entry_proper_noun(entry):
+                    continue
                 ofp.write(u'{}\n'.format(
-                    u'\t'.join(self.to_list(word, entry, inflected))))
+                    u'\t'.join(self.to_list(
+                        word, entry, inflected, maybe_proper_noun))))
+
+    @staticmethod
+    def is_entry_proper_noun(entry):
+        for word in entry.words:
+            if not DBWordNetParser.is_proper_noun(word):
+                return False
+        return True
+
+    @staticmethod
+    def is_proper_noun(word):
+        m = DBWordNetParser._PROPER_NOUN_REGEX_.match(word)
+        return m is not None
 
     @staticmethod
     def read_lexname(wndb_path):

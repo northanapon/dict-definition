@@ -3,7 +3,7 @@ from random import shuffle
 import re
 import argparse
 import codecs
-from nltk import word_tokenize
+
 from neobunch import Bunch
 from definition.words import word_sampler
 
@@ -68,6 +68,9 @@ def clean_definition(word, definition):
         else:
             break
     tokens = word_tokenize(definition)
+    # # e.g. at the end
+    # if tokens[-1] == "e.g.":
+    #     tokens = tokens[:-1]
     word_lemmas = set([p[0] for p in word_sampler.lemmatize_all(word)])
     tokens_lemmas = set()
     for token in tokens:
@@ -75,7 +78,7 @@ def clean_definition(word, definition):
             set([p[0] for p in word_sampler.lemmatize_all(token)]))
     if len(word_lemmas.intersection(tokens_lemmas)) > 0:
         return ""
-    definition = definition.strip()
+    definition = ' '.join(tokens)
     return definition
 
 
