@@ -51,32 +51,69 @@ def remove_banned_words(word_list, banned_words, lower=False):
     return words
 
 
-def split_by_lemma(word_list, train_frac=0.95):
-    _frac = 1.0 - train_frac
-    val_frac = test_frac = _frac / 2
+def intersect_words(a, bset, lower=False):
+    new = []
+    for w in a:
+        if lower:
+            w = w.lower()
+        if w in bset:
+            new.append(w)
+    return new
+
+
+def map_words_to_lemmas(word_list):
     lemma_words = defaultdict(list)
     for w in word_list:
         lemma = lemmatize(w, try_all_pos_tags=False)
         lemma_words[lemma].append(w)
     lemmas = lemma_words.keys()
-    n_valid = int(len(lemmas) * val_frac)
-    n_test = int(len(lemmas) * test_frac)
     shuffled = list(lemmas)
     random.shuffle(shuffled)
-    valid_lemmas = shuffled[0:n_valid]
-    test_lemmas = shuffled[n_valid:n_valid+n_test]
-    train_lemmas = shuffled[n_valid+n_test:]
+    return lemma_words, shuffled
 
-    def map_lemmas_to_words(lemmas):
+
+def map_lemmas_to_words(lemmas, lemma_words):
         words = []
         for lemma in lemmas:
             words.extend(lemma_words[lemma])
         return words
 
-    train_words = map_lemmas_to_words(train_lemmas)
-    valid_words = map_lemmas_to_words(valid_lemmas)
-    test_words = map_lemmas_to_words(test_lemmas)
+
+def split_by_lemma(word_list, train_frac=0.90):
+    lemma_words, shuffled = map_words_to_lemmas(word_list)
+    _frac = 1.0 - train_frac
+    val_frac = test_frac = _frac / 2
+    n_valid = int(len(shuffled) * val_frac)
+    n_test = int(len(shuffled) * test_frac)
+    valid_lemmas = shuffled[0:n_valid]
+    test_lemmas = shuffled[n_valid:n_valid+n_test]
+    train_lemmas = shuffled[n_valid+n_test:]
+    train_words = map_lemmas_to_words(train_lemmas, lemma_words)
+    valid_words = map_lemmas_to_words(valid_lemmas, lemma_words)
+    test_words = map_lemmas_to_words(test_lemmas, lemma_words)
     return (train_words, valid_words, test_words)
+
+
+def cv_by_lemma(word_list, k=10):
+    lemma_words, shuffled = map_words_to_lemmas(word_list)
+    chunk_size = int(len(shuffled) / k)
+    offsets = [0]
+    s = 0
+    left_over = len(shuffled) % k
+    for __ in range(k):
+        s += chunk_size
+        if left_over > 0:
+            s += 1
+            left_over -= 1
+        offsets.append(s)
+    cv = []
+    for i in range(1, k + 1):
+        valid = shuffled[offsets[i - 1]:offsets[i]]
+        train = shuffled[offsets[0]:offsets[i - 1]] + shuffled[offsets[i]:]
+        cv.append((
+            map_lemmas_to_words(train, lemma_words),
+            map_lemmas_to_words(valid, lemma_words)))
+    return cv
 
 
 def clean_definition(
