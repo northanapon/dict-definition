@@ -17,7 +17,7 @@ Preprocessing scripts to read definitions and other information from dictionarie
 
 ### Datasets
 - [GCIDE](http://gcide.gnu.org.ua/), GNU Collaborative International Dictionary of English, contains entries mostly from Webster. This project use a pre-processed version of the original release which can be found [here](http://rali.iro.umontreal.ca/GCIDE/).
-- [WordNet](https://wordnet.princeton.edu/) contains about 150,000 words and phrases. This project uses [NLTK](http://www.nltk.org/) to read data from WordNet.
+- [WordNet](https://wordnet.princeton.edu/) contains about 150,000 words and phrases. You can find WordNet database [here](https://wordnet.princeton.edu/wordnet/download/current-version/) (see WordNet 3.0 for UNIX). You might also need [lexnames](http://websail-fe.cs.northwestern.edu/downloads/dictdef/lexnames) in the database directory, if not already present.
 - [HillF_TACL2016](http://arxiv.org/abs/1504.00548) provides more than 800k definitions from WordNik API along with word embeddings. Unfortunately, [the link](http://www.cl.cam.ac.uk/~fh295/) to the data is not present.
 
 ### APIs
