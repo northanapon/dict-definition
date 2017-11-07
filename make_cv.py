@@ -3,6 +3,7 @@ import argparse
 from functools import partial
 from collections import defaultdict
 from dictdef.dataset import cv_by_lemma
+from dictdef.dataset import split_by_lemma
 
 
 def ensure_dir(directory):
@@ -25,6 +26,8 @@ if __name__ == '__main__':
     aparser.add_argument(
         'output_dir', type=str, help='output directory')
     aparser.add_argument('k', type=int, help="k fold")
+    aparser.add_argument(
+        'train_frac', type=float, help="train fraction (for normal split)")
 
     opt = aparser.parse_args()
 
@@ -35,8 +38,13 @@ if __name__ == '__main__':
         for line in lines:
             word = line.split('\t')[0]
             data[word].append(line)
-    CVs = cv_by_lemma(list(data.keys()), k=opt.k)
+    word_list = list(data.keys())
+    CVs = cv_by_lemma(word_list, k=opt.k)
     for i, (train, valid) in enumerate(CVs):
         ensure_dir(dpath(f'cv{i}'))
         write_to_file(dpath(f'cv{i}/train.txt'), train, data)
         write_to_file(dpath(f'cv{i}/valid.txt'), valid, data)
+
+    splits = split_by_lemma(word_list, train_frac=opt.train_frac)
+    for split, filename in zip(splits, ('train.txt', 'valid.txt', 'test.txt')):
+        write_to_file(dpath(filename), split, data)

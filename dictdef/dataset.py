@@ -25,7 +25,7 @@ def lemmatize(
         return wnl.lemmatize(w, pos=pos)
 
 
-def remove_words_with_regex(word_list, regex=r"[^a-zA-Z]+"):
+def remove_words_with_regex(word_list, regex=r'[^a-zA-Z_]+'):
     new_words = []
     p = re.compile(regex)
     for word in word_list:
@@ -91,7 +91,7 @@ def split_by_lemma(word_list, train_frac=0.90):
     train_words = map_lemmas_to_words(train_lemmas, lemma_words)
     valid_words = map_lemmas_to_words(valid_lemmas, lemma_words)
     test_words = map_lemmas_to_words(test_lemmas, lemma_words)
-    return (train_words, valid_words, test_words)
+    return train_words, valid_words, test_words
 
 
 def cv_by_lemma(word_list, k=10):
@@ -118,36 +118,45 @@ def cv_by_lemma(word_list, k=10):
 
 def clean_definition(
         word, definition,
-        _delimiter=re.compile(r'[;:]'), _removed=re.compile(r'\([^\)]+\)')):
+        only_first_def=False, remove_paren_phrase=False, remove_self_ref=False,
+        remove_lemma_ref=False, _delimiter=re.compile(r'[;:]'),
+        _removed=re.compile(r'\([^\)]+\)')):
     _d = definition
     # take only first definition `:` or `;`
-    m = _delimiter.search(definition)
-    if m is not None:
-        definition = definition[0:m.start()]
-    # remove domain specifiers or comments
-    while True:
-        m = _removed.match(definition)
+    if only_first_def:
+        m = _delimiter.search(definition)
         if m is not None:
-            definition = '{} {}'.format(definition[0:m.start()].strip(),
-                                        definition[m.end():].strip())
-        else:
-            break
+            definition = definition[0:m.start()]
+    # remove domain specifiers or comments
+    if remove_paren_phrase:
+        while True:
+            m = _removed.search(definition)
+            if m is not None:
+                definition = ' '.join(
+                    (definition[:m.start()].strip(), definition[m.end():].strip()))
+            else:
+                break
     tokens = definition.strip().split()
     if len(tokens) == 0:
-        return ""
+        return ''
     # e.g. at the end
     if tokens[-1] == "e.g.":
         tokens = tokens[:-1]
     # remove self reference
-    word_lemmas = set((p[0] for p in lemmatize_all(word)))
-    tokens_lemmas = set()
-    for token in tokens:
-        tokens_lemmas = tokens_lemmas.union(
-            set([p[0] for p in lemmatize_all(token)]))
-    if len(word_lemmas.intersection(tokens_lemmas)) > 0:
-        return ""
+    if remove_self_ref:
+        if word in tokens:
+            return ''
+    # remove lemma ref
+    if remove_lemma_ref:
+        word_lemmas = set((p[0] for p in lemmatize_all(word)))
+        tokens_lemmas = set()
+        for token in tokens:
+            tokens_lemmas = tokens_lemmas.union(
+                set([p[0] for p in lemmatize_all(token)]))
+        if len(word_lemmas.intersection(tokens_lemmas)) > 0:
+            return ''
     definition = ' '.join(tokens)
-    return definition
+    return definition.strip()
 
 
 def corenlp_tokenize(text_list, path_to_jar):
